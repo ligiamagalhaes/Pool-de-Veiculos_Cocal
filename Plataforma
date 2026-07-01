@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pool de Veículos - Falconi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #EAEBE9;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 30px;
+            border-bottom: 3px solid #7A7423;
+            padding-bottom: 15px;
+        }
+
+        h1 {
+            color: #7A7423;
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #A7E82B;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #7A7423;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #7A7423;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5d5a1b;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #7A7423;
+            border: 2px solid #7A7423;
+        }
+
+        .btn-secondary:hover {
+            background: #f9f8f5;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .filter-group label {
+            margin: 0;
+            font-weight: 600;
+            font-size: 12px;
+            color: #666;
+        }
+
+        select {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            background: white;
+            min-width: 180px;
+        }
+
+        .vehicles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 18px;
+        }
+
+        .vehicle-card {
+            background: white;
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border-top: 4px solid #A7E82B;
+        }
+
+        .vehicle-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .vehicle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .vehicle-id {
+            font-size: 16px;
+            font-weight: 700;
+            color: #7A7423;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-disponivel {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-reservado {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-ocupado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .vehicle-info {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.8;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #999;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .diretoria-badge {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #555;
+            margin-top: 6px;
+        }
+
+        .vehicle-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-reserve {
+            background: #7A7423;
+            color: white;
+        }
+
+        .btn-reserve:hover:not(:disabled) {
+            background: #5d5a1b;
+        }
+
+        .btn-reserve:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-view-reservas {
+            background: #e8f4f8;
+            color: #0066cc;
+        }
+
+        .btn-view-reservas:hover {
+            background: #d0e8f0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: #7A7423;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #A7E82B;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #7A7423;
+            box-shadow: 0 0 0 2px rgba(122, 116, 35, 0.1);
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .reservas-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+
+        .reserva-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+        }
+
+        .reserva-item:last-child {
+            border-bottom: none;
+        }
+
+        .reserva-header {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .reserva-details {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .email-info {
+            background: #f0f8ff;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 4px solid #0066cc;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #7A7423;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚗 Pool de Veículos Falconi</h1>
+            <div class="header-info">Sistema de gerenciamento de frota com envio de emails</div>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalVehicles">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="availableVehicles">0</div>
+                <div class="stat-label">Disponíveis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="reservedVehicles">0</div>
+                <div class="stat-label">Reservados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="occupiedVehicles">0</div>
+                <div class="stat-label">Em Uso</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="filter-group">
+                <label for="filterDiretoria">Filtrar por Diretoria:</label>
+                <select id="filterDiretoria" onchange="filterVehicles()">
+                    <option value="">Todas as Diretorias</option>
+                </select>
+            </div>
+            <button class="btn-secondary" onclick="exportReservas()">📊 Exportar Reservas</button>
+        </div>
+
+        <div id="alertBox"></div>
+
+        <div class="vehicles-grid" id="vehiclesContainer">
+            <div class="empty-state">
+                <div class="empty-state-icon">🚗</div>
+                <p>Carregando veículos...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="reserveModal">
+        <div class="modal-content">
+            <div class="modal-header">Reservar Veículo</div>
+            <div id="reserveContent"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="reservasModal">
+        <div class="modal-content">
+            <div class="modal-header" id="reservasModalTitle">Reservas do Veículo</div>
+            <div id="reservasContent"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('reservasModal')" style="grid-column: 1 / -1;">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const vehiclesData = [
+            {frota: "4506597", modelo: "VW SAVEIRO RB CD", gerente: "Walter Di Mastrogirolamo", usuario: "COI - PPTA - Leandro Veríssimo", diretoria: "INDUSTRIA"},
+            {frota: "4000855", modelo: "VW POLO TSI", gerente: "Hernandes Rosa Junior", usuario: "João Gasques", diretoria: "INDUSTRIA"},
+            {frota: "4507065", modelo: "VW SAVEIRO RB CS", gerente: "Walter Di Mastrogirolamo", usuario: "Manutenção industrial", diretoria: "INDUSTRIA"},
+            {frota: "4506661", modelo: "VW POLO TRACK", gerente: "Hernandes Rosa Junior", usuario: "PCM", diretoria: "INDUSTRIA"},
+            {frota: "4000823", modelo: "VW SAVEIRO ROBUST CS", gerente: "Hernandes Rosa Junior", usuario: "Manutenção industrial", diretoria: "INDUSTRIA"},
+            {frota: "4507030", modelo: "VW POLO TRACK", gerente: "Edson José Esteves Ribeiro", usuario: "Equipe Suprimentos", diretoria: "ADMINISTRATIVO"},
+            {frota: "4506373", modelo: "VW POLO TSI", gerente: "Daniel Gualtieri", usuario: "Alexandre Augusto de Brito", diretoria: "AGRÍCOLA"},
+            {frota: "4507009", modelo: "VW POLO TRACK", gerente: "Daniel Gualtieri", usuario: "Carolina Bellao", diretoria: "AGRÍCOLA"},
+            {frota: "4506594", modelo: "VW SAVEIRO RB CD", gerente: "Daniel Gualtieri", usuario: "Equipe Entomologia", diretoria: "AGRÍCOLA"},
+            {frota: "4507055", modelo: "VW SAVEIRO RB CS", gerente: "Daniel Gualtieri", usuario: "Ester Geronimo Serra", diretoria: "AGRÍCOLA"},
+            {frota: "4507054", modelo: "VW POLO TRACK", gerente: "Daniel Gualtieri", usuario: "Fernando da Silva Soares", diretoria: "AGRÍCOLA"},
+            {frota: "4506374", modelo: "VW POLO TSI", gerente: "Daniel Gualtieri", usuario: "Marcia Viotto", diretoria: "AGRÍCOLA"},
+            {frota: "4506377", modelo: "VW POLO TSI", gerente: "Daniel Gualtieri", usuario: "Reiner Hosse Gatto", diretoria: "AGRÍCOLA"},
+            {frota: "4507056", modelo: "VW POLO TRACK", gerente: "Daniel Gualtieri", usuario: "Renato Marcos de Leão", diretoria: "AGRÍCOLA"},
+            {frota: "4506857", modelo: "VW POLO TRACK", gerente: "Daniel Gualtieri", usuario: "Sebastião Camargo", diretoria: "AGRÍCOLA"},
+            {frota: "4506995", modelo: "VW POLO TSI", gerente: "Daniel Gualtieri", usuario: "Wilian Fabricio Pinto", diretoria: "AGRÍCOLA"},
+            {frota: "4506306", modelo: "VW POLO TRACK", gerente: "Deolinda Pereira Barbosa", usuario: "Analistas RH", diretoria: "GENTE E GESTÃO"},
+            {frota: "4506684", modelo: "VW SAVEIRO RB CD", gerente: "Alessandra Emanuelle", usuario: "Adriano Bertasso Pereira", diretoria: "GENTE E GESTÃO"},
+            {frota: "4506340", modelo: "VW POLO TRACK", gerente: "Alessandra Emanuelle", usuario: "Equipe Patrimonial", diretoria: "GENTE E GESTÃO"},
+            {frota: "4506312", modelo: "VW POLO TRACK", gerente: "Valdemir Donizeti Nunes", usuario: "Equipe treinamento", diretoria: "GENTE E GESTÃO"},
+            {frota: "4506858", modelo: "VW POLO TRACK", gerente: "Rodrigo Amancio da Silva", usuario: "Lucas Videira da Silva", diretoria: "GERENCIAS EXECUTIVAS"},
+            {frota: "4507051", modelo: "VW POLO TRACK", gerente: "Tavis Ramatis Barros", usuario: "Fernanda Rodrigues", diretoria: "GERENCIAS EXECUTIVAS"},
+            {frota: "4506322", modelo: "VW POLO TRACK", gerente: "Adriano Calsoni", usuario: "Equipe COI", diretoria: "INDUSTRIA"},
+            {frota: "4504628", modelo: "VW GOL 1.0", gerente: "Marcos Antonio dos Reis", usuario: "Equipe Biogás", diretoria: "INDUSTRIA"},
+            {frota: "4506254", modelo: "VW POLO TRACK", gerente: "Marcos Antonio dos Reis", usuario: "Equipe Biogás", diretoria: "INDUSTRIA"}
+        ];
+
+        let allReservations = JSON.parse(localStorage.getItem('vehicleReservations')) || [];
+        let currentFilterDiretoria = '';
+
+        const FORMSPREE_ID = 'maqgpjdn';
+        const EMAIL_DESTINATARIO = 'ligiamagalhaes@falconi.com';
+
+        function initializePage() {
+            populateDiretoriaFilter();
+            renderVehicles();
+        }
+
+        function populateDiretoriaFilter() {
+            const diretorias = [...new Set(vehiclesData.map(v => v.diretoria))].sort();
+            const select = document.getElementById('filterDiretoria');
+            diretorias.forEach(dir => {
+                const option = document.createElement('option');
+                option.value = dir;
+                option.textContent = dir;
+                select.appendChild(option);
+            });
+        }
+
+        function filterVehicles() {
+            currentFilterDiretoria = document.getElementById('filterDiretoria').value;
+            renderVehicles();
+        }
+
+        function renderVehicles() {
+            const container = document.getElementById('vehiclesContainer');
+            
+            let filtered = vehiclesData;
+            if (currentFilterDiretoria) {
+                filtered = vehiclesData.filter(v => v.diretoria === currentFilterDiretoria);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚗</div><p>Nenhum veículo encontrado.</p></div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map((vehicle, idx) => {
+                const statusDisplay = getVehicleStatus(vehicle.frota);
+                const statusClass = `status-${statusDisplay.class}`;
+                
+                return `
+                    <div class="vehicle-card">
+                        <div class="vehicle-header">
+                            <div class="vehicle-id">${vehicle.frota}</div>
+                            <span class="status-badge ${statusClass}">${statusDisplay.label}</span>
+                        </div>
+                        <div class="vehicle-info">
+                            <div class="info-row">
+                                <span class="info-label">Modelo:</span>
+                                <span class="info-value">${vehicle.modelo}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Gerente:</span>
+                                <span class="info-value">${vehicle.gerente.split(' ')[0]}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Usuário Atual:</span>
+                                <span class="info-value">${vehicle.usuario.substring(0, 25)}</span>
+                            </div>
+                            <span class="diretoria-badge">${vehicle.diretoria}</span>
+                        </div>
+                        <div class="vehicle-actions">
+                            <button class="btn-small btn-reserve" onclick="openReserveModal('${vehicle.frota}', '${vehicle.modelo}')" ${statusDisplay.canReserve ? '' : 'disabled'}>
+                                📅 Reservar
+                            </button>
+                            <button class="btn-small btn-view-reservas" onclick="viewReservations('${vehicle.frota}')">
+                                📋 Reservas
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateStats(filtered);
+        }
+
+        function getVehicleStatus(frota) {
+            const reservations = allReservations.filter(r => r.frota === frota);
+            const now = new Date();
+            
+            let hasActive = false;
+            let hasReserved = false;
+
+            for (let res of reservations) {
+                const start = new Date(res.dataInicio + 'T' + res.horaInicio);
+                const end = new Date(res.dataFim + 'T' + res.horaFim);
+                
+                if (now >= start && now <= end) {
+                    hasActive = true;
+                } else if (now < start) {
+                    hasReserved = true;
+                }
+            }
+
+            if (hasActive) {
+                return { label: 'Em Uso', class: 'ocupado', canReserve: false };
+            } else if (hasReserved) {
+                return { label: 'Reservado', class: 'reservado', canReserve: true };
+            } else {
+                return { label: 'Disponível', class: 'disponivel', canReserve: true };
+            }
+        }
+
+        function updateStats(filtered) {
+            const total = filtered.length;
+            let available = 0, reserved = 0, occupied = 0;
+
+            filtered.forEach(v => {
+                const status = getVehicleStatus(v.frota);
+                if (status.class === 'disponivel') available++;
+                else if (status.class === 'reservado') reserved++;
+                else if (status.class === 'ocupado') occupied++;
+            });
+
+            document.getElementById('totalVehicles').textContent = total;
+            document.getElementById('availableVehicles').textContent = available;
+            document.getElementById('reservedVehicles').textContent = reserved;
+            document.getElementById('occupiedVehicles').textContent = occupied;
+        }
+
+        function openReserveModal(frota, modelo) {
+            const content = document.getElementById('reserveContent');
+            const vehicle = vehiclesData.find(v => v.frota === frota);
+            
+            content.innerHTML = `
+                <div class="email-info">
+                    📧 Um email de confirmação será enviado para o endereço informado
+                </div>
+                
+                <div class="email-info" style="background: #fff3cd; border-left-color: #ff9800;">
+                    ⚠️ <strong>REGRAS DO POOL:</strong><br>
+                    • Horário: 08:00 às 16:00<br>
+                    • Segunda a Sexta apenas<br>
+                    • Máximo 5 dias consecutivos<br>
+                    • Intervalo de 1h entre devoluções
+                </div>
+                
+                <form id="reserveForm" onsubmit="submitReservation(event, '${frota}')">
+                    <div class="form-group">
+                        <label>Veículo</label>
+                        <input type="text" value="${frota} - ${modelo}" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Seu Nome *</label>
+                        <input type="text" id="userName" placeholder="Seu nome completo" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Seu Email *</label>
+                        <input type="email" id="userEmail" placeholder="seu.email@falconi.com.br" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Departamento/Diretoria *</label>
+                        <input type="text" id="userDept" value="${vehicle.diretoria}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Data de Início (Seg-Sex) *</label>
+                        <input type="date" id="startDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Hora de Início (08:00-16:00) *</label>
+                        <input type="time" id="startTime" value="08:00" min="08:00" max="16:00" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Data de Término (Seg-Sex, máx 5 dias) *</label>
+                        <input type="date" id="endDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Hora de Término (08:00-16:00) *</label>
+                        <input type="time" id="endTime" value="16:00" min="08:00" max="16:00" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Motivo da Reserva *</label>
+                        <input type="text" id="purpose" placeholder="Ex: Reunião com cliente" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Observações</label>
+                        <textarea id="notes" placeholder="Observações..."></textarea>
+                    </div>
+                    
+                    <div id="validationMessage" style="display: none; margin-bottom: 15px; padding: 12px; border-radius: 4px; font-size: 12px;"></div>
+                    
+                    <div class="loading" id="reserveLoading">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 10px; color: #666;">Processando...</p>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('reserveModal')">Cancelar</button>
+                        <button type="submit" class="btn-primary" id="submitBtn">Confirmar</button>
+                    </div>
+                </form>
+            `;
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').setAttribute('min', today);
+            document.getElementById('endDate').setAttribute('min', today);
+            
+            document.getElementById('startDate').addEventListener('change', checkConflicts);
+            document.getElementById('startTime').addEventListener('change', checkConflicts);
+            document.getElementById('endDate').addEventListener('change', checkConflicts);
+            document.getElementById('endTime').addEventListener('change', checkConflicts);
+            
+            document.getElementById('reserveModal').classList.add('active');
+        }
+
+        function checkConflicts() {
+            const frotaValue = document.querySelector('input[disabled]').value.split(' ')[0];
+            const startDate = document.getElementById('startDate').value;
+            const startTime = document.getElementById('startTime').value;
+            const endDate = document.getElementById('endDate').value;
+            const endTime = document.getElementById('endTime').value;
+            
+            if (!startDate || !startTime || !endDate || !endTime) return;
+            
+            const validationMsg = document.getElementById('validationMessage');
+            const errors = [];
+            
+            const start = new Date(startDate + 'T' + startTime);
+            const end = new Date(endDate + 'T' + endTime);
+            
+            if (end < start) {
+                errors.push('Data de término não pode ser antes da data de início');
+            }
+            
+            const startDay = new Date(startDate).getDay();
+            const endDay = new Date(endDate).getDay();
+            
+            if (startDay === 0 || startDay === 6) {
+                errors.push('❌ Data inicial: Apenas Seg-Sex');
+            }
+            
+            if (endDay === 0 || endDay === 6) {
+                errors.push('❌ Data final: Apenas Seg-Sex');
+            }
+            
+            const startHour = parseInt(startTime.split(':')[0]);
+            const endHour = parseInt(endTime.split(':')[0]);
+            
+            if (startHour < 8 || startHour > 16) {
+                errors.push('❌ Hora inicial: 08:00-16:00');
+            }
+            
+            if (endHour < 8 || endHour > 16) {
+                errors.push('❌ Hora final: 08:00-16:00');
+            }
+            
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays > 5) {
+                errors.push('❌ Máximo: 5 dias (você escolheu ' + diffDays + ')');
+            }
+            
+            const conflicts = allReservations.filter(r => {
+                if (r.frota !== frotaValue) return false;
+                const rStart = new Date(r.dataInicio + 'T' + r.horaInicio);
+                const rEnd = new Date(r.dataFim + 'T' + r.horaFim);
+                const rEndWithBuffer = new Date(rEnd.getTime() + 60 * 60 * 1000);
+                return (start < rEndWithBuffer && end > rStart);
+            });
+            
+            if (conflicts.length > 0) {
+                errors.push('❌ Conflito com reserva existente (intervalo 1h)');
+            }
+            
+            if (errors.length > 0) {
+                validationMsg.style.display = 'block';
+                validationMsg.className = 'alert alert-error';
+                validationMsg.innerHTML = '<strong>Erros:</strong><br>' + errors.join('<br>');
+                document.getElementById('submitBtn').disabled = true;
+            } else {
+                validationMsg.style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
+            }
+        }
+        
+        function getDayName(day) {
+            const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+            return days[day];
+        }
+
+        function submitReservation(e, frota) {
+            e.preventDefault();
+            
+            const reservation = {
+                id: 'RES_' + Date.now(),
+                frota: frota,
+                usuario: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                diretoria: document.getElementById('userDept').value,
+                dataInicio: document.getElementById('startDate').value,
+                horaInicio: document.getElementById('startTime').value,
+                dataFim: document.getElementById('endDate').value,
+                horaFim: document.getElementById('endTime').value,
+                motivo: document.getElementById('purpose').value,
+                notas: document.getElementById('notes').value,
+                dataCriacao: new Date().toISOString(),
+                status: 'confirmada'
+            };
+            
+            document.getElementById('reserveLoading').classList.add('show');
+            document.getElementById('submitBtn').disabled = true;
+            
+            enviarEmailComFormspree(reservation)
+                .then(() => {
+                    allReservations.push(reservation);
+                    localStorage.setItem('vehicleReservations', JSON.stringify(allReservations));
+                    
+                    document.getElementById('reserveLoading').classList.remove('show');
+                    showAlert(`✅ Reserva confirmada! Email enviado para ${reservation.email}`, 'success');
+                    
+                    setTimeout(() => {
+                        closeModal('reserveModal');
+                        renderVehicles();
+                    }, 2000);
+                })
+                .catch(error => {
+                    document.getElementById('reserveLoading').classList.remove('show');
+                    document.getElementById('submitBtn').disabled = false;
+                    showAlert('⚠️ Reserva criada mas email não foi enviado.', 'error');
+                    
+                    allReservations.push(reservation);
+                    localStorage.setItem('vehicleReservations', JSON.stringify(allReservations));
+                    renderVehicles();
+                });
+        }
+
+        function enviarEmailComFormspree(reservation) {
+            if (FORMSPREE_ID === 'maqgpjdn') {
+                const vehicle = vehiclesData.find(v => v.frota === reservation.frota);
+                const startDate = new Date(reservation.dataInicio + 'T' + reservation.horaInicio);
+                const endDate = new Date(reservation.dataFim + 'T' + reservation.horaFim);
+                const hours = Math.round((endDate - startDate) / (1000 * 60 * 60) * 10) / 10;
+                
+                const mensagem = `CONFIRMAÇÃO DE RESERVA - POOL DE VEÍCULOS FALCONI\n\nOlá ${reservation.usuario},\n\nSua reserva foi confirmada com sucesso!\n\nDETALHES:\nVeículo: ${vehicle.frota} - ${vehicle.modelo}\nPeríodo: ${startDate.toLocaleDateString('pt-BR')} ${reservation.horaInicio} até ${endDate.toLocaleDateString('pt-BR')} ${reservation.horaFim}\nDuração: ${hours} horas\nMotivo: ${reservation.motivo}\nCódigo: ${reservation.id}\n\nREGRAS:\n• Horário: 08:00-16:00\n• Seg-Sex apenas\n• Máx 5 dias\n• Intervalo 1h\n\nAtenciosamente,\nSistema Pool de Veículos`;
+                
+                return fetch(`https://formspree.io/f/maqgpjdn`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: reservation.email,
+                        message: mensagem,
+                        name: reservation.usuario,
+                        _subject: `✅ Confirmação - Veículo ${vehicle.frota}`
+                    })
+                });
+            }
+            return Promise.resolve();
+        }
+
+        function viewReservations(frota) {
+            const reservations = allReservations.filter(r => r.frota === frota);
+            const vehicle = vehiclesData.find(v => v.frota === frota);
+            document.getElementById('reservasModalTitle').textContent = `Reservas - ${frota}`;
+            
+            if (reservations.length === 0) {
+                document.getElementById('reservasContent').innerHTML = '<div class="empty-state"><p>Nenhuma reserva.</p></div>';
+            } else {
+                document.getElementById('reservasContent').innerHTML = `<div class="reservas-list">${reservations.map(res => {
+                    const start = new Date(res.dataInicio + 'T' + res.horaInicio);
+                    const end = new Date(res.dataFim + 'T' + res.horaFim);
+                    const hours = Math.round((end - start) / (1000 * 60 * 60) * 10) / 10;
+                    const now = new Date();
+                    const isActive = now >= start && now <= end;
+                    
+                    return `<div class="reserva-item"><div class="reserva-header">${res.usuario}</div><div class="reserva-details"><strong>Período:</strong> ${start.toLocaleDateString('pt-BR')} ${res.horaInicio} até ${end.toLocaleDateString('pt-BR')} ${res.horaFim} (${hours}h)<br><strong>Motivo:</strong> ${res.motivo}<br><strong>Status:</strong> ${isActive ? '🟡 Em uso' : '✅ Confirmada'}</div></div>`;
+                }).join('')}</div>`;
+            }
+            
+            document.getElementById('reservasModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            if (!message) {
+                alertBox.innerHTML = '';
+                return;
+            }
+            alertBox.innerHTML = `<div class="alert alert-${type} show">${message}</div>`;
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => { alertBox.innerHTML = ''; }, 4000);
+            }
+        }
+
+        function exportReservas() {
+            if (allReservations.length === 0) {
+                showAlert('Nenhuma reserva para exportar', 'info');
+                return;
+            }
+            
+            const csv = 'Veículo,Usuário,Email,Diretoria,Data,Hora Ini,Hora Fim,Motivo,Status\n' +
+                allReservations.map(r => {
+                    return `${r.frota},"${r.usuario}","${r.email}","${r.diretoria}",${r.dataInicio},${r.horaInicio},${r.horaFim},"${r.motivo}",${r.status}`;
+                }).join('\n');
+            
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `reservas-pool-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            showAlert('Exportado!', 'success');
+        }
+
+        window.onclick = function(event) {
+            const modal = event.target;
+            if (modal.classList && modal.classList.contains('modal')) {
+                modal.classList.remove('active');
+            }
+        }
+
+        initializePage();
+    </script>
+</body>
+</html>
