@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pool Veículos Cocal</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#EAEBE9;padding:20px;color:#333}.container{max-width:1600px;margin:0 auto}header{margin-bottom:30px;border-bottom:3px solid #7A7423;padding-bottom:15px}h1{color:#7A7423;font-size:28px;margin-bottom:8px;font-weight:700}.header-info{font-size:14px;color:#666}.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:15px;margin-bottom:25px}.stat-card{background:white;padding:15px;border-radius:8px;border-left:4px solid #A7E82B;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.05)}.stat-value{font-size:24px;font-weight:700;color:#7A7423}.stat-label{font-size:11px;color:#999;margin-top:5px;text-transform:uppercase;font-weight:600}.controls{display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap;align-items:center}button{padding:10px 16px;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;transition:all 0.2s}.btn-primary{background:#7A7423;color:white}.btn-primary:hover{background:#5d5a1b}.btn-secondary{background:white;color:#7A7423;border:2px solid #7A7423}.btn-secondary:hover{background:#f9f8f5}.btn-relatorio{background:#FF7628;color:white}.btn-relatorio:hover{background:#e55a0d}.filter-group{display:flex;gap:10px;align-items:center;background:white;padding:8px 12px;border-radius:6px;border:1px solid #ddd}.filter-group label{margin:0;font-weight:600;font-size:12px;color:#666}select,input[type="date"]{padding:6px 10px;border:none;border-radius:4px;font-size:13px;background:white;min-width:140px}.vehicles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}.vehicle-card{background:white;border-radius:8px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:all 0.3s;border-top:4px solid #A7E82B}.vehicle-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.12);transform:translateY(-2px)}.vehicle-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}.vehicle-id{font-size:16px;font-weight:700;color:#7A7423}.status-badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase}.status-disponivel{background:#d4edda;color:#155724}.status-reservado{background:#fff3cd;color:#856404}.status-ocupado{background:#f8d7da;color:#721c24}.status-parcial{background:#fff3cd;color:#856404}.vehicle-info{font-size:12px;color:#666;margin-bottom:12px;line-height:1.8;border-bottom:1px solid #eee;padding-bottom:12px}.diretoria-badge{display:inline-block;background:#f0f0f0;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;color:#555;margin-top:6px}.vehicle-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.btn-small{padding:8px 12px;font-size:11px;border:none;border-radius:4px;cursor:pointer;font-weight:600;transition:all 0.2s}.btn-reserve{background:#7A7423;color:white}.btn-reserve:hover:not(:disabled){background:#5d5a1b}.btn-reserve:disabled{background:#ccc;cursor:not-allowed;opacity:0.6}.btn-view-reservas{background:#e8f4f8;color:#0066cc}.btn-view-reservas:hover{background:#d0e8f0}.modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5)}.modal.active{display:flex;align-items:center;justify-content:center}.modal-content{background:white;padding:30px;border-radius:8px;width:90%;max-width:550px;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.3)}.modal-header{font-size:20px;font-weight:700;color:#7A7423;margin-bottom:20px;border-bottom:2px solid #A7E82B;padding-bottom:10px}.form-group{margin-bottom:18px}label{display:block;font-weight:700;font-size:12px;margin-bottom:6px;color:#333;text-transform:uppercase}input,textarea,select{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:13px;font-family:inherit}input:focus,textarea:focus,select:focus{outline:none;border-color:#7A7423;box-shadow:0 0 0 2px rgba(122,116,35,0.1)}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:25px}.empty-state{text-align:center;padding:60px 20px;color:#999;grid-column:1/-1}.alert{padding:12px 16px;border-radius:6px;margin-bottom:20px;font-size:13px;display:none}.alert.show{display:block}.alert-success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}.alert-error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}.loading{display:none;text-align:center;padding:20px}.loading.show{display:block}.spinner{border:3px solid #f3f3f3;border-top:3px solid #7A7423;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}.email-info{background:#f0f8ff;padding:12px;border-radius:4px;border-left:4px solid #0066cc;margin-bottom:15px;font-size:12px;color:#333}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚗 Pool Veículos Cocal</h1>
+            <div class="header-info">Sistema de gerenciamento de frota</div>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalVehicles">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="availableVehicles">0</div>
+                <div class="stat-label">Disponíveis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="reservedVehicles">0</div>
+                <div class="stat-label">Reservados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalReservas">0</div>
+                <div class="stat-label">Total de Reservas</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="filter-group">
+                <label for="filterDiretoria">Filtrar:</label>
+                <select id="filterDiretoria" onchange="filterVehicles()">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterData">Disponível em:</label>
+                <input type="date" id="filterData" onchange="filterVehicles()">
+            </div>
+            <button class="btn-relatorio" onclick="mostrarReservados()" style="background: #61C2FF;">📋 Ver Reservados</button>
+            <button class="btn-relatorio" onclick="abrirGoogleSheets()">📊 Google Sheets</button>
+            <button class="btn-relatorio" style="background: #FF5252;" onclick="openCancelModal()">❌ Cancelar Reserva</button>
+        </div>
+
+        <div id="alertBox"></div>
+        <div class="vehicles-grid" id="vehiclesContainer">
+            <div class="empty-state">Carregando...</div>
+        </div>
+    </div>
+
+    <div class="modal" id="reserveModal">
+        <div class="modal-content">
+            <div class="modal-header">Reservar Veículo</div>
+            <div id="reserveContent"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="reservasModal">
+        <div class="modal-content">
+            <div class="modal-header" id="reservasModalTitle">Reservas</div>
+            <div id="reservasContent"></div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal('reservasModal')" style="grid-column:1/-1">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="reservadosModal">
+        <div class="modal-content">
+            <div class="modal-header">🚗 Veículos Reservados</div>
+            <div id="reservadosContent"></div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal('reservadosModal')" style="grid-column:1/-1">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="cancelModal">
+        <div class="modal-content">
+            <div class="modal-header">Cancelar Reserva</div>
+            <div style="background: #fff3cd; padding: 12px; border-radius: 6px; border-left: 4px solid #ff9800; margin-bottom: 15px; font-size: 12px;">
+                ⚠️ Para cancelar, você precisa informar o email da reserva (o mesmo email usado ao fazer a reserva)
+            </div>
+            <form onsubmit="cancelarReserva(event)">
+                <div class="form-group">
+                    <label>Código da Reserva (RES_...)*</label>
+                    <input type="text" id="cancelResId" placeholder="Ex: RES_1720000000001" required>
+                </div>
+                <div class="form-group">
+                    <label>Email da Reserva *</label>
+                    <input type="email" id="cancelResEmail" placeholder="email@empresa.com.br" required>
+                </div>
+                <div class="form-group">
+                    <label>Motivo do Cancelamento</label>
+                    <textarea id="cancelMotivo" placeholder="Por que deseja cancelar?"></textarea>
+                </div>
+                <div id="cancelMsg" style="display:none; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 12px;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('cancelModal')">Voltar</button>
+                    <button type="submit" class="btn-primary" style="background: #FF5252;">Cancelar Reserva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const FORMSPREE_ID = 'maqgpjdn';
+
+        const vehiclesData = [
+            {frota: "4506597", modelo: "VW SAVEIRO RB CD", diretoria: "INDUSTRIA"},
+            {frota: "4000855", modelo: "VW POLO TSI", diretoria: "INDUSTRIA"},
+            {frota: "4507065", modelo: "VW SAVEIRO RB CS", diretoria: "INDUSTRIA"},
+            {frota: "4506661", modelo: "VW POLO TRACK", diretoria: "INDUSTRIA"},
+            {frota: "4000823", modelo: "VW SAVEIRO ROBUST CS", diretoria: "INDUSTRIA"},
+            {frota: "4507030", modelo: "VW POLO TRACK", diretoria: "ADMINISTRATIVO"},
+            {frota: "4506373", modelo: "VW POLO TSI", diretoria: "AGRÍCOLA"},
+            {frota: "4507009", modelo: "VW POLO TRACK", diretoria: "AGRÍCOLA"},
+            {frota: "4506594", modelo: "VW SAVEIRO RB CD", diretoria: "AGRÍCOLA"},
+            {frota: "4507055", modelo: "VW SAVEIRO RB CS", diretoria: "AGRÍCOLA"},
+            {frota: "4507054", modelo: "VW POLO TRACK", diretoria: "AGRÍCOLA"},
+            {frota: "4506374", modelo: "VW POLO TSI", diretoria: "AGRÍCOLA"},
+            {frota: "4506377", modelo: "VW POLO TSI", diretoria: "AGRÍCOLA"},
+            {frota: "4507056", modelo: "VW POLO TRACK", diretoria: "AGRÍCOLA"},
+            {frota: "4506857", modelo: "VW POLO TRACK", diretoria: "AGRÍCOLA"},
+            {frota: "4506995", modelo: "VW POLO TSI", diretoria: "AGRÍCOLA"},
+            {frota: "4506306", modelo: "VW POLO TRACK", diretoria: "GENTE E GESTÃO"},
+            {frota: "4506684", modelo: "VW SAVEIRO RB CD", diretoria: "GENTE E GESTÃO"},
+            {frota: "4506340", modelo: "VW POLO TRACK", diretoria: "GENTE E GESTÃO"},
+            {frota: "4506312", modelo: "VW POLO TRACK", diretoria: "GENTE E GESTÃO"},
+            {frota: "4506858", modelo: "VW POLO TRACK", diretoria: "GERENCIAS EXECUTIVAS"},
+            {frota: "4507051", modelo: "VW POLO TRACK", diretoria: "GERENCIAS EXECUTIVAS"},
+            {frota: "4506322", modelo: "VW POLO TRACK", diretoria: "INDUSTRIA"},
+            {frota: "4504628", modelo: "VW GOL 1.0", diretoria: "INDUSTRIA"},
+            {frota: "4506254", modelo: "VW POLO TRACK", diretoria: "INDUSTRIA"}
+        ];
+
+        let allReservations = [];
+        let currentFilterDiretoria = '';
+
+        // URL para exportar Google Sheets como CSV (público)
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwtlAWp6K7mqh2RsEpX1LA0fM_eccjGeWHi9pF-Xe144lrCiOY1_2QorqU2bxQB446d/exec';
+        
+        function carregarReservas() {
+            // Buscar dados do Google Sheets via CSV
+            fetch(GOOGLE_SHEETS_URL)
+                .then(r => {
+                    console.log('📡 Resposta do Sheets:', r.status, r.statusText);
+                    return r.text();
+                })
+                .then(csv => {
+                    console.log('📋 CSV recebido, tamanho:', csv.length, 'caracteres');
+                    const novasReservas = parseCSV(csv);
+                    
+                    // ✅ IMPORTANTE: Sempre usar Google Sheets como fonte da verdade
+                    // Isso evita duplicatas do localStorage antigo
+                    allReservations = novasReservas;
+                    localStorage.setItem('poolReservations', JSON.stringify(allReservations));
+                    console.log('✅ Carregado do Google Sheets:', allReservations.length, 'reservas');
+                    renderVehicles();
+                    updateStats();
+                })
+                .catch(e => {
+                    console.log('❌ Erro ao carregar Google Sheets:', e.message);
+                    // Fallback para localStorage
+                    try {
+                        const saved = localStorage.getItem('poolReservations');
+                        if (saved) {
+                            allReservations = JSON.parse(saved);
+                            console.log('📦 Usando dados locais (cache):', allReservations.length, 'reservas');
+                        } else {
+                            allReservations = [];
+                        }
+                    } catch (err) {
+                        allReservations = [];
+                    }
+                    renderVehicles();
+                    updateStats();
+                });
+        }
+        
+        function parseCSV(csv) {
+            const lines = csv.trim().split('\n');
+            const reservations = [];
+            
+            console.log('📄 CSV recebido, linhas:', lines.length);
+            console.log('📄 Primeira linha (header):', lines[0]);
+            
+            // Começar da linha 2 (pular header)
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                console.log(`📍 Linha ${i}:`, line);
+                
+                // Parse CSV com aspas
+                const values = parseCSVLine(line);
+                
+                console.log(`✅ Parsed ${i}:`, values);
+                
+                // Se tem ID (coluna 0) e NÃO é o header
+                if (values[0] && String(values[0]).trim() !== '' && String(values[0]).trim().toLowerCase() !== 'id') {
+                    const res = {
+                        id: String(values[0]).trim(),
+                        frota: String(values[1] || '').trim(),
+                        usuario: String(values[2] || '').trim(),
+                        email: String(values[3] || '').trim(),
+                        diretoria: String(values[4] || '').trim(),
+                        dataInicio: String(values[5] || '').trim(),
+                        horaInicio: String(values[6] || '').trim(),
+                        dataFim: String(values[7] || '').trim(),
+                        horaFim: String(values[8] || '').trim(),
+                        motivo: String(values[9] || '').trim(),
+                        ocupacao: parseInt(values[10]) || 0,
+                        notas: String(values[11] || '').trim(),
+                        dataCriacao: String(values[12] || '').trim(),
+                        status: String(values[13] || 'confirmada').trim()
+                    };
+                    
+                    console.log('🚗 Reserva adicionada:', res);
+                    reservations.push(res);
+                }
+            }
+            
+            console.log('📊 Total de reservas parseadas:', reservations.length);
+            return reservations;
+        }
+        
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+                
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        // Aspas duplas = um escape
+                        current += '"';
+                        i++;
+                    } else {
+                        // Toggle quotes
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    // Separador de campo
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            
+            return result;
+        }
+
+        function initializePage() {
+            const diretorias = [...new Set(vehiclesData.map(v => v.diretoria))].sort();
+            const select = document.getElementById('filterDiretoria');
+            diretorias.forEach(dir => {
+                const opt = document.createElement('option');
+                opt.value = dir;
+                opt.textContent = dir;
+                select.appendChild(opt);
+            });
+            carregarReservas();
+            
+            // Recarregar a cada 5 segundos para manter sincronizado
+            setInterval(carregarReservas, 5000);
+        }
+
+        function filterVehicles() {
+            currentFilterDiretoria = document.getElementById('filterDiretoria').value;
+            renderVehicles();
+        }
+
+        function renderVehicles() {
+            const container = document.getElementById('vehiclesContainer');
+            const filterData = document.getElementById('filterData').value;
+            let filtered = vehiclesData;
+            
+            if (currentFilterDiretoria) {
+                filtered = vehiclesData.filter(v => v.diretoria === currentFilterDiretoria);
+            }
+
+            container.innerHTML = filtered.map(v => {
+                const status = filterData ? getStatusOnDate(v.frota, filterData) : getStatus(v.frota);
+                return `<div class="vehicle-card">
+                    <div class="vehicle-header">
+                        <div class="vehicle-id">${v.frota}</div>
+                        <span class="status-badge status-${status.class}">${status.label}</span>
+                    </div>
+                    <div class="vehicle-info">
+                        <strong>Modelo:</strong> ${v.modelo}
+                        <div class="diretoria-badge">${v.diretoria}</div>
+                    </div>
+                    <div class="vehicle-actions">
+                        <button class="btn-small btn-reserve" onclick="openReserveModal('${v.frota}', '${v.modelo}')">📅 Reservar</button>
+                        <button class="btn-small btn-view-reservas" onclick="viewReservations('${v.frota}')">📋 Reservas</button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            updateStats(filtered);
+        }
+
+        function getStatus(frota) {
+            const res = allReservations.filter(r => r.frota === frota && r.status !== 'cancelada');
+            const now = new Date();
+            let activeRes = null, nextRes = null;
+            let isPartialToday = false;
+            
+            for (let r of res) {
+                const start = new Date(r.dataInicio + 'T' + r.horaInicio);
+                const end = new Date(r.dataFim + 'T' + r.horaFim);
+                const today = now.toLocaleDateString('pt-BR');
+                const startToday = start.toLocaleDateString('pt-BR');
+                const endToday = end.toLocaleDateString('pt-BR');
+                
+                // Se está ativo agora
+                if (now >= start && now <= end) {
+                    activeRes = r;
+                } 
+                // Se é reservado hoje mas não é agora
+                else if (startToday === today && now < start) {
+                    isPartialToday = true;
+                    if (!nextRes) nextRes = r;
+                }
+                // Se tem próxima reserva no futuro (estava faltando!)
+                else if (now < start) {
+                    if (!nextRes || new Date(nextRes.dataInicio + 'T' + nextRes.horaInicio) > start) {
+                        nextRes = r;
+                    }
+                }
+            }
+            
+            // Se está ativo agora
+            if (activeRes) {
+                const end = new Date(activeRes.dataFim + 'T' + activeRes.horaFim);
+                const endToday = end.toLocaleDateString('pt-BR') === now.toLocaleDateString('pt-BR');
+                const label = endToday ? 
+                    `📅 Reservado até ${activeRes.horaFim}h` : 
+                    `📅 Reservado até ${end.toLocaleDateString('pt-BR')} ${activeRes.horaFim}h`;
+                return {label: label, class: 'ocupado', canReserve: false};
+            }
+            
+            // Se tem reserva para hoje mas não agora = Parcialmente disponível
+            if (isPartialToday && nextRes) {
+                const start = new Date(nextRes.dataInicio + 'T' + nextRes.horaInicio);
+                const end = new Date(nextRes.dataFim + 'T' + nextRes.horaFim);
+                return {
+                    label: `⏱️ Disponível Parcialmente (${nextRes.horaInicio}h-${nextRes.horaFim}h)`, 
+                    class: 'parcial', 
+                    canReserve: true
+                };
+            }
+            
+            // Se tem próxima reserva
+            if (nextRes) {
+                const start = new Date(nextRes.dataInicio + 'T' + nextRes.horaInicio);
+                const end = new Date(nextRes.dataFim + 'T' + nextRes.horaFim);
+                const startToday = start.toLocaleDateString('pt-BR') === now.toLocaleDateString('pt-BR');
+                const label = startToday ? 
+                    `📅 Reservado de ${nextRes.horaInicio}h até ${nextRes.horaFim}h` : 
+                    `📅 Reservado ${start.toLocaleDateString('pt-BR')} ${nextRes.horaInicio}h até ${end.toLocaleDateString('pt-BR')} ${nextRes.horaFim}h`;
+                return {label: label, class: 'reservado', canReserve: true};
+            }
+            
+            return {label: '✅ Disponível', class: 'disponivel', canReserve: true};
+        }
+
+        function getStatusOnDate(frota, dataStr) {
+            const res = allReservations.filter(r => r.frota === frota && r.status !== 'cancelada');
+            const checkDate = new Date(dataStr + 'T00:00:00');
+            const checkDateEnd = new Date(dataStr + 'T23:59:59');
+            
+            for (let r of res) {
+                const start = new Date(r.dataInicio + 'T' + r.horaInicio);
+                const end = new Date(r.dataFim + 'T' + r.horaFim);
+                // Verifica se o período abrange a data selecionada
+                if (start <= checkDateEnd && end >= checkDate) {
+                    const hi = r.horaInicio.substring(0, 5);
+                    const hf = r.horaFim.substring(0, 5);
+                    return {label: `Ocupado: ${hi}h às ${hf}h`, class: 'ocupado', canReserve: false};
+                }
+            }
+            return {label: 'Disponível neste dia', class: 'disponivel', canReserve: true};
+        }
+
+        function updateStats(filtered) {
+            const total = filtered.length;
+            let available = 0, reserved = 0;
+            filtered.forEach(v => {
+                const s = getStatus(v.frota);
+                if (s.class === 'disponivel') available++;
+                else if (s.class === 'reservado') reserved++;
+            });
+            document.getElementById('totalVehicles').textContent = total;
+            document.getElementById('availableVehicles').textContent = available;
+            document.getElementById('reservedVehicles').textContent = reserved;
+            // Contar apenas reservas ativas (não canceladas) e únicas
+            const totalReservasAtivas = allReservations.filter(r => r.status !== 'cancelada').length;
+            document.getElementById('totalReservas').textContent = totalReservasAtivas;
+        }
+
+        function mostrarCampoOutro() {
+            const purpose = document.getElementById('purpose').value;
+            const outroDiv = document.getElementById('purposeOutroDiv');
+            if (purpose === 'Outros') {
+                outroDiv.style.display = 'block';
+                document.getElementById('purposeOutro').required = true;
+            } else {
+                outroDiv.style.display = 'none';
+                document.getElementById('purposeOutro').required = false;
+            }
+        }
+
+        function openReserveModal(frota, modelo) {
+            const vehicle = vehiclesData.find(v => v.frota === frota);
+            const content = document.getElementById('reserveContent');
+            content.innerHTML = `<form onsubmit="submitReservation(event, '${frota}')">
+                    <div class="form-group">
+                        <label>Veículo</label>
+                        <input type="text" value="${frota} - ${modelo}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Seu Nome *</label>
+                        <input type="text" id="userName" placeholder="Nome completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Seu Email *</label>
+                        <input type="email" id="userEmail" placeholder="email@empresa.com.br" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Diretoria *</label>
+                        <input type="text" id="userDept" value="${vehicle.diretoria}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Data Início (Seg-Sex) *</label>
+                        <input type="date" id="startDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora Início *</label>
+                        <select id="startTime" required>
+                            <option value="">Selecione uma hora</option>
+                            <option value="08:00">08:00</option>
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="11:00">11:00</option>
+                            <option value="12:00">12:00</option>
+                            <option value="13:00">13:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="15:00">15:00</option>
+                            <option value="16:00">16:00</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Data Término (Seg-Sex) *</label>
+                        <input type="date" id="endDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora Término *</label>
+                        <select id="endTime" required>
+                            <option value="">Selecione uma hora</option>
+                            <option value="08:00">08:00</option>
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="11:00">11:00</option>
+                            <option value="12:00">12:00</option>
+                            <option value="13:00">13:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="15:00">15:00</option>
+                            <option value="16:00">16:00</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Motivo da Reserva *</label>
+                        <select id="purpose" onchange="mostrarCampoOutro()" required>
+                            <option value="">Selecione um motivo</option>
+                            <option value="Reunião com cliente">Reunião com cliente</option>
+                            <option value="Deslocamento interno">Deslocamento interno</option>
+                            <option value="Visita técnica">Visita técnica</option>
+                            <option value="Entrega/Coleta">Entrega/Coleta</option>
+                            <option value="Treinamento">Treinamento</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="purposeOutroDiv" style="display:none;">
+                        <label>Especifique o motivo *</label>
+                        <input type="text" id="purposeOutro" placeholder="Detalhe o motivo da reserva">
+                    </div>
+                    <div class="form-group">
+                        <label>Ocupação do Veículo (máx 5 pessoas) *</label>
+                        <input type="number" id="occupancyCount" min="1" max="5" placeholder="1 a 5 pessoas" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Observações</label>
+                        <textarea id="notes" placeholder="Observações..."></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('reserveModal')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Confirmar</button>
+                    </div>
+                </form>`;
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').setAttribute('min', today);
+            document.getElementById('endDate').setAttribute('min', today);
+            document.getElementById('reserveModal').classList.add('active');
+        }
+
+        function submitReservation(e, frota) {
+            e.preventDefault();
+            
+            let motivo = document.getElementById('purpose').value;
+            if (motivo === 'Outros') {
+                motivo = document.getElementById('purposeOutro').value;
+            }
+            
+            const reservation = {
+                id: 'RES_' + Date.now(),
+                frota: frota,
+                usuario: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                diretoria: document.getElementById('userDept').value,
+                dataInicio: document.getElementById('startDate').value,
+                horaInicio: document.getElementById('startTime').value,
+                dataFim: document.getElementById('endDate').value,
+                horaFim: document.getElementById('endTime').value,
+                motivo: motivo,
+                ocupacao: parseInt(document.getElementById('occupancyCount').value),
+                notas: document.getElementById('notes').value,
+                dataCriacao: new Date().toISOString(),
+                status: 'confirmada'
+            };
+
+            // Mostrar pop-up ANTES de salvar (mais rápido)
+            const vehicle = vehiclesData.find(v => v.frota === frota);
+            const start = new Date(reservation.dataInicio + 'T' + reservation.horaInicio);
+            const end = new Date(reservation.dataFim + 'T' + reservation.horaFim);
+            const hours = Math.round((end - start) / (1000 * 60 * 60) * 10) / 10;
+            
+            mostrarPopupConfirmacao(reservation, vehicle, hours, start, end);
+            
+            // Salvar em background (não bloqueia a interface)
+            // Salvar localmente primeiro
+            allReservations.push(reservation);
+            localStorage.setItem('poolReservations', JSON.stringify(allReservations));
+            
+            // Tentar salvar no Google Sheets em background
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                body: JSON.stringify(reservation)
+            })
+            .then(r => r.json())
+            .then(result => {
+                console.log('Salvo no Google Sheets:', result);
+            })
+            .catch(e => {
+                console.log('Erro ao salvar no Google Sheets:', e);
+            });
+            
+            // Enviar email
+            enviarEmail(reservation);
+            
+            // Atualizar interface
+            carregarReservas();
+        }
+
+        function enviarEmail(res) {
+            const vehicle = vehiclesData.find(v => v.frota === res.frota);
+            const start = new Date(res.dataInicio + 'T' + res.horaInicio);
+            const end = new Date(res.dataFim + 'T' + res.horaFim);
+            const hours = Math.round((end - start) / (1000 * 60 * 60) * 10) / 10;
+            
+            const msg = `Sua reserva foi confirmada com sucesso!
+
+DETALHES DA RESERVA:
+═════════════════════════════════════════════
+Veículo: ${vehicle.frota} - ${vehicle.modelo}
+Período: ${start.toLocaleDateString('pt-BR')} ${res.horaInicio} até ${end.toLocaleDateString('pt-BR')} ${res.horaFim}
+Duração: ${hours} horas
+Motivo: ${res.motivo}
+Ocupação: ${res.ocupacao} pessoa(s)
+Diretoria: ${res.diretoria}
+Código da Reserva: ${res.id}
+
+INSTRUÇÕES IMPORTANTES:
+═════════════════════════════════════════════
+1. Apresente este email na retirada do veículo
+2. Verifique o estado do carro (combustível, danos, etc)
+3. Anote o km de saída e retorno
+4. Devolva no horário agendado: ${res.horaFim}
+
+⚠️ REGRAS DO POOL:
+═════════════════════════════════════════════
+• Horário: 08:00 às 16:00
+• Segunda a Sexta apenas
+• Máximo 5 dias consecutivos
+• Intervalo de 1h obrigatório entre devoluções`;
+
+            fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    email: res.email,
+                    message: msg,
+                    name: res.usuario,
+                    _subject: `✅ Confirmação de Reserva - Veículo ${vehicle.frota}`
+                })
+            })
+            .then(() => {
+                mostrarPopupConfirmacao(res, vehicle, hours, start, end);
+            })
+            .catch(e => {
+                mostrarPopupConfirmacao(res, vehicle, hours, start, end);
+            });
+        }
+
+        function mostrarPopupConfirmacao(res, vehicle, hours, start, end) {
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 25px;
+                border-radius: 15px;
+                box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+                z-index: 2000;
+                max-width: 95%;
+                width: 500px;
+                max-height: 80vh;
+                overflow-y: auto;
+                font-family: Arial, sans-serif;
+                color: #333;
+                border: 3px solid #7A7423;
+            `;
+            
+            popup.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #7A7423; margin: 0; font-size: 22px;">✅ Reserva Confirmada!</h2>
+                    <button onclick="fecharPopupConfirmacao()" style="background: #FF5252; color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 20px; font-weight: bold; padding: 0;">×</button>
+                </div>
+                
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 12px; margin-bottom: 20px; font-size: 13px; line-height: 1.6;">
+                    <p style="margin: 0 0 10px 0;"><strong style="color: #7A7423;">Veículo:</strong> ${vehicle.frota} - ${vehicle.modelo}</p>
+                    <p style="margin: 0 0 10px 0;"><strong style="color: #7A7423;">Período:</strong> ${start.toLocaleDateString('pt-BR')} ${res.horaInicio} até ${end.toLocaleDateString('pt-BR')} ${res.horaFim}</p>
+                    <p style="margin: 0 0 10px 0;"><strong style="color: #7A7423;">Duração:</strong> ${hours}h</p>
+                    <p style="margin: 0 0 10px 0;"><strong style="color: #7A7423;">Motivo:</strong> ${res.motivo}</p>
+                    <p style="margin: 0 0 10px 0;"><strong style="color: #7A7423;">Ocupação:</strong> ${res.ocupacao} pessoa(s)</p>
+                    <p style="margin: 0 0 10px 0;"><strong style="color: #7A7423;">Diretoria:</strong> ${res.diretoria}</p>
+                    <p style="margin: 0; color: #e74c3c;"><strong>Código:</strong> ${res.id}</p>
+                </div>
+                
+                <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #ff9800; font-size: 12px;">
+                    <h4 style="color: #ff9800; margin: 0 0 8px 0;">⚠️ INSTRUÇÕES:</h4>
+                    <p style="margin: 5px 0;">1. Apresente na retirada</p>
+                    <p style="margin: 5px 0;">2. Verifique danos/combustível</p>
+                    <p style="margin: 5px 0;">3. Anote km saída/retorno</p>
+                    <p style="margin: 5px 0;">4. Devolva às ${res.horaFim}</p>
+                </div>
+                
+                <div style="text-align: center; display: flex; gap: 10px; justify-content: center;">
+                    <button onclick="window.print()" style="background: #7A7423; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;">🖨️ Imprimir</button>
+                    <button onclick="fecharPopupConfirmacao()" style="background: #ddd; color: #333; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;">Fechar</button>
+                </div>
+            `;
+            
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 1999;
+                cursor: pointer;
+            `;
+            overlay.id = 'popupOverlay';
+            overlay.onclick = fecharPopupConfirmacao;
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(popup);
+            popup.id = 'popupConfirmacao';
+        }
+
+        function fecharPopupConfirmacao() {
+            const popup = document.getElementById('popupConfirmacao');
+            const overlay = document.getElementById('popupOverlay');
+            if (popup) popup.remove();
+            if (overlay) overlay.remove();
+        }
+
+        function viewReservations(frota) {
+            const res = allReservations.filter(r => r.frota === frota && r.status !== 'cancelada');
+            const vehicle = vehiclesData.find(v => v.frota === frota);
+            document.getElementById('reservasModalTitle').textContent = `Reservas - ${frota}`;
+            document.getElementById('reservasContent').innerHTML = res.length === 0 ? '<p>Nenhuma reserva</p>' :
+                `<table style="width:100%;font-size:11px;border-collapse:collapse;">
+                    <tr style="background:#f0f0f0;"><th style="padding:8px;text-align:left;">Usuário</th><th style="padding:8px;text-align:left;">Data</th><th style="padding:8px;text-align:left;">Horário</th><th style="padding:8px;text-align:left;">Pessoas</th></tr>
+                    ${res.map(r => {const s = new Date(r.dataInicio + 'T' + r.horaInicio); const e = new Date(r.dataFim + 'T' + r.horaFim); return `<tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">${r.usuario}</td><td style="padding:8px;">${s.toLocaleDateString('pt-BR')} a ${e.toLocaleDateString('pt-BR')}</td><td style="padding:8px;">${r.horaInicio} - ${r.horaFim}</td><td style="padding:8px;">${r.ocupacao}</td></tr>`;}).join('')}
+                </table>`;
+            document.getElementById('reservasModal').classList.add('active');
+        }
+
+        function abrirGoogleSheets() {
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1w2yrfNDjKla64F8_4DM03bb-QKGyEnLnl854dvv--I0/edit';
+            window.open(sheetUrl, '_blank');
+        }
+
+        function mostrarReservados() {
+            const filterData = document.getElementById('filterData').value;
+            
+            if (!filterData) {
+                showAlert('Selecione uma data para ver os carros reservados', 'error');
+                return;
+            }
+            
+            const checkDate = new Date(filterData + 'T00:00:00');
+            const checkDateEnd = new Date(filterData + 'T23:59:59');
+            
+            let reservados = [];
+            
+            vehiclesData.forEach(vehicle => {
+                const reservations = allReservations.filter(r => r.frota === vehicle.frota && r.status !== 'cancelada');
+                
+                for (let res of reservations) {
+                    const start = new Date(res.dataInicio + 'T' + res.horaInicio);
+                    const end = new Date(res.dataFim + 'T' + res.horaFim);
+                    
+                    // Verifica se o período abrange a data selecionada
+                    if (start <= checkDateEnd && end >= checkDate) {
+                        reservados.push({
+                            frota: vehicle.frota,
+                            modelo: vehicle.modelo,
+                            usuario: res.usuario,
+                            email: res.email,
+                            horaInicio: res.horaInicio,
+                            horaFim: res.horaFim,
+                            dataInicio: res.dataInicio,
+                            dataFim: res.dataFim
+                        });
+                    }
+                }
+            });
+            
+            const dataFormatada = new Date(filterData + 'T00:00:00').toLocaleDateString('pt-BR');
+            document.getElementById('reservadosContent').innerHTML = reservados.length === 0 ? 
+                `<div style="text-align: center; padding: 30px; color: #666;">
+                    <p style="font-size: 16px;">✅ Nenhum veículo reservado em ${dataFormatada}</p>
+                </div>` :
+                `<div style="background: #f9f9f9; padding: 20px; border-radius: 8px;">
+                    <p style="margin-top: 0; color: #666;"><strong>Carros reservados em ${dataFormatada}:</strong></p>
+                    <div style="overflow-x: auto;">
+                        <table style="width:100%;font-size:12px;border-collapse:collapse;">
+                            <tr style="background:#f0f0f0;"><th style="padding:10px;text-align:left;border-bottom:1px solid #ddd;">Frota</th><th style="padding:10px;text-align:left;border-bottom:1px solid #ddd;">Modelo</th><th style="padding:10px;text-align:left;border-bottom:1px solid #ddd;">Usuário</th><th style="padding:10px;text-align:left;border-bottom:1px solid #ddd;">Horário</th></tr>
+                            ${reservados.map(r => `<tr style="border-bottom:1px solid #eee;"><td style="padding:10px;">${r.frota}</td><td style="padding:10px;">${r.modelo}</td><td style="padding:10px;">${r.usuario}</td><td style="padding:10px;">${r.horaInicio} - ${r.horaFim}</td></tr>`).join('')}
+                        </table>
+                    </div>
+                </div>`;
+            
+            document.getElementById('reservadosModal').classList.add('active');
+        }
+
+        function exportarRelatorio() {
+            if (allReservations.length === 0) {showAlert('Nenhuma reserva', 'error'); return;}
+            let csv = 'ID,Frota,Usuário,Email,Diretoria,Data Início,Hora Início,Data Fim,Hora Fim,Motivo,Ocupação,Notas,Status\n';
+            allReservations.forEach(r => csv += `"${r.id}","${r.frota}","${r.usuario}","${r.email}","${r.diretoria}","${r.dataInicio}","${r.horaInicio}","${r.dataFim}","${r.horaFim}","${r.motivo}","${r.ocupacao}","${r.notas}","${r.status}"\n`);
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `relatorio-pool-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            showAlert('✅ Relatório exportado!', 'success');
+        }
+
+        function closeModal(id) {document.getElementById(id).classList.remove('active');}
+        function showAlert(msg, type) {
+            const box = document.getElementById('alertBox');
+            box.innerHTML = `<div class="alert alert-${type} show">${msg}</div>`;
+            setTimeout(() => {box.innerHTML = '';}, 4000);
+        }
+
+        function openCancelModal() {
+            document.getElementById('cancelModal').classList.add('active');
+        }
+
+        function cancelarReserva(e) {
+            e.preventDefault();
+            
+            const resId = document.getElementById('cancelResId').value;
+            const resEmail = document.getElementById('cancelResEmail').value;
+            const motivo = document.getElementById('cancelMotivo').value;
+            
+            // Procurar a reserva
+            const reserva = allReservations.find(r => r.id === resId && r.email === resEmail);
+            
+            if (!reserva) {
+                const msg = document.getElementById('cancelMsg');
+                msg.style.display = 'block';
+                msg.style.background = '#f8d7da';
+                msg.style.color = '#721c24';
+                msg.style.border = '1px solid #f5c6cb';
+                msg.innerHTML = '❌ Reserva não encontrada. Verifique o código e email.';
+                return;
+            }
+            
+            // Atualizar status no Google Sheets (cancelada)
+            const cancelData = {
+                id: resId,
+                action: 'cancel',
+                email: resEmail,
+                motivo: motivo,
+                dataCancelamento: new Date().toISOString(),
+                status: 'cancelada'
+            };
+            
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                body: JSON.stringify(cancelData)
+            })
+            .then(r => r.json())
+            .then(result => {
+                // Enviar email de cancelamento
+                const vehicle = vehiclesData.find(v => v.frota === reserva.frota);
+                const msgCancel = `Sua reserva foi CANCELADA com sucesso!\n\nDetalhes:\nVeículo: ${vehicle.frota} - ${vehicle.modelo}\nCódigo: ${resId}\nData cancelamento: ${new Date().toLocaleDateString('pt-BR')}\n\nMotivo: ${motivo}\n\nAtenciosamente,\nPool Veículos Cocal`;
+                
+                fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email: resEmail, message: msgCancel, name: reserva.usuario, _subject: '❌ Cancelamento de Reserva - ' + vehicle.frota})
+                })
+                .then(() => {
+                    // Atualizar lista local
+                    const index = allReservations.findIndex(r => r.id === resId);
+                    if (index > -1) {
+                        allReservations[index].status = 'cancelada';
+                    }
+                    
+                    showAlert('✅ Reserva cancelada com sucesso! Email enviado para ' + resEmail, 'success');
+                    carregarReservas();
+                    closeModal('cancelModal');
+                    
+                    // Limpar campos
+                    document.getElementById('cancelResId').value = '';
+                    document.getElementById('cancelResEmail').value = '';
+                    document.getElementById('cancelMotivo').value = '';
+                })
+                .catch(e => {
+                    showAlert('⚠️ Reserva cancelada mas email pode ter falhado.', 'error');
+                    carregarReservas();
+                    closeModal('cancelModal');
+                });
+            })
+            .catch(e => {
+                const msg = document.getElementById('cancelMsg');
+                msg.style.display = 'block';
+                msg.style.background = '#f8d7da';
+                msg.style.color = '#721c24';
+                msg.innerHTML = '❌ Erro ao cancelar: ' + e.message;
+            });
+        }
+        window.onclick = e => {if (e.target.classList && e.target.classList.contains('modal')) e.target.classList.remove('active');};
+        initializePage();
+    </script>
+</body>
+</html>
