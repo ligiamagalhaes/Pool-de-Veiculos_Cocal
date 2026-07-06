@@ -305,7 +305,7 @@
                         <div class="diretoria-badge">${v.diretoria}</div>
                     </div>
                     <div class="vehicle-actions">
-                        <button class="btn-small btn-reserve" onclick="openReserveModal('${v.frota}', '${v.modelo}')">📅 Reservar</button>
+                        <button class="btn-small btn-reserve" onclick="openReserveModal('${v.frota}', '${v.modelo}')" ${status.canReserve ? '' : 'disabled'}>📅 Reservar</button>
                         <button class="btn-small btn-view-reservas" onclick="viewReservations('${v.frota}')">📋 Reservas</button>
                     </div>
                 </div>`;
@@ -373,7 +373,7 @@
                 const label = startToday ? 
                     `📅 Reservado de ${nextRes.horaInicio}h até ${nextRes.horaFim}h` : 
                     `📅 Reservado ${start.toLocaleDateString('pt-BR')} ${nextRes.horaInicio}h até ${end.toLocaleDateString('pt-BR')} ${nextRes.horaFim}h`;
-                return {label: label, class: 'reservado', canReserve: true};
+                return {label: label, class: 'reservado', canReserve: false};
             }
             
             return {label: '✅ Disponível', class: 'disponivel', canReserve: true};
@@ -428,7 +428,8 @@
         function openReserveModal(frota, modelo) {
             const vehicle = vehiclesData.find(v => v.frota === frota);
             const content = document.getElementById('reserveContent');
-            content.innerHTML = `<form onsubmit="submitReservation(event, '${frota}')">
+            content.innerHTML = `<div class="email-info">📧 Email de confirmação será enviado</div>
+                <form onsubmit="submitReservation(event, '${frota}')">
                     <div class="form-group">
                         <label>Veículo</label>
                         <input type="text" value="${frota} - ${modelo}" disabled>
@@ -544,6 +545,44 @@
                 status: 'confirmada'
             };
 
+            // ✅ VALIDAR CONFLITOS COM 1H DE INTERVALO
+            const novaInicio = new Date(reservation.dataInicio + 'T' + reservation.horaInicio);
+            const novaFim = new Date(reservation.dataFim + 'T' + reservation.horaFim);
+            const intervalo = 60 * 60 * 1000; // 1 hora em ms
+            
+            // Buscar todas as reservas ativas para este carro
+            const reservasExistentes = allReservations.filter(r => 
+                r.frota === frota && r.status !== 'cancelada'
+            );
+            
+            console.log('🔍 Validando: ', reservation.dataInicio, reservation.horaInicio + '-' + reservation.horaFim);
+            console.log('📊 Existentes:', reservasExistentes.length);
+            
+            for (let res of reservasExistentes) {
+                const existeInicio = new Date(res.dataInicio + 'T' + res.horaInicio);
+                const existeFim = new Date(res.dataFim + 'T' + res.horaFim);
+                
+                console.log('  vs:', res.dataInicio, res.horaInicio + '-' + res.horaFim);
+                
+                // ✅ NÃO há conflito se:
+                // - Nova termina ANTES que existente começa MENOS 1h
+                // - Nova começa DEPOIS que existente termina MAIS 1h
+                // Conflito = NÃO (uma das condições acima)
+                
+                const novaTerminaAntes = novaFim.getTime() <= (existeInicio.getTime() - intervalo);
+                const novaComecaDepois = novaInicio.getTime() >= (existeFim.getTime() + intervalo);
+                
+                const temConflito = !(novaTerminaAntes || novaComecaDepois);
+                
+                console.log('    Termina antes:', novaTerminaAntes, '| Começa depois:', novaComecaDepois, '| Conflito:', temConflito);
+                
+                if (temConflito) {
+                    const horaDisponivel = adicionarHoras(res.horaFim, 1);
+                    showAlert(`❌ CONFLITO DE HORÁRIO!\n\nExiste uma reserva de ${res.horaInicio} a ${res.horaFim}.\n\nCom intervalo obrigatório de 1h, você pode reservar a partir de ${horaDisponivel}.`, 'error');
+                    return;
+                }
+            }
+
             // Mostrar pop-up ANTES de salvar (mais rápido)
             const vehicle = vehiclesData.find(v => v.frota === frota);
             const start = new Date(reservation.dataInicio + 'T' + reservation.horaInicio);
@@ -575,6 +614,13 @@
             
             // Atualizar interface
             carregarReservas();
+        }
+        
+        // ✅ Função auxiliar para adicionar horas
+        function adicionarHoras(hora, horas) {
+            const [h, m] = hora.split(':').map(Number);
+            const novaHora = (h + horas) % 24;
+            return String(novaHora).padStart(2, '0') + ':' + String(m).padStart(2, '0');
         }
 
         function enviarEmail(res) {
